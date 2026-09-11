@@ -8,7 +8,7 @@ function reachable(level,from){
   for(let i=0;i<todo.length;i++){const [x,y]=todo[i],id=x+','+y;if(seen.has(id)||solid(level,x+.5,y+.5))continue;seen.add(id);for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]])todo.push([x+dx,y+dy]);}return seen;
 }
 const has=(seen,p)=>seen.has(Math.floor(p.x)+','+Math.floor(p.y));
-for(let i=0;i<3;i++){
+for(let i=0;i<10;i++){
   test('sector '+i+': every actor and pickup is on traversable floor',()=>{
     const l=buildLevel(i);for(const p of [l.spawn,l.exit,...l.items,...l.enemies,...l.props,...l.relays])assert.equal(solid(l,p.x,p.y),false,JSON.stringify(p));
     for(let j=0;j<l.size;j++){assert.ok(l.grid[0][j]);assert.ok(l.grid[l.size-1][j]);assert.ok(l.grid[j][0]);assert.ok(l.grid[j][l.size-1]);}
@@ -49,9 +49,10 @@ test('projectiles collide without tunnelling and shield absorbs damage',()=>{
   assert.ok(p.shield<shield);assert.ok(p.health<health);assert.equal(w.projectiles.length,0);
   const w2=new World();w2.level.enemies=[];w2.projectiles=[{x:2.2,y:24.5,dx:-30,dy:0,friendly:false,damage:20,life:1}];w2.update(.04);assert.equal(w2.projectiles.length,0);
 });
-test('exit requires relays and final-sector Warden',()=>{
-  const w=new World(2);w.player.x=w.level.exit.x;w.player.y=w.level.exit.y;w.use();assert.equal(w.state,'playing');
-  w.level.relays.forEach(r=>r.on=true);w.use();assert.equal(w.state,'playing');assert.match(w.message,/Warden/);
+test('exit requires relays and final-sector boss',()=>{
+  const w=new World(9);w.player.x=w.level.exit.x;w.player.y=w.level.exit.y;w.use();assert.equal(w.state,'playing');
+  w.level.relays.forEach(r=>r.on=true);w.use();assert.equal(w.state,'playing');assert.match(w.message,/Core Titan/);
+  assert.ok(w.level.enemies.some(e=>e.kind==='boss'&&!e.dead));
   w.level.enemies.forEach(e=>e.dead=true);w.use();assert.equal(w.state,'complete');
 });
 test('sector carryover restores supplies and preserves recovered weapons',()=>{
