@@ -90,7 +90,7 @@ export class World {
       const dx=Math.cos(angle),dy=Math.sin(angle);
       if(p.weapon===2){this.projectiles.push({x:p.x+dx*.25,y:p.y+dy*.25,dx:dx*11,dy:dy*11,friendly:true,damage:w.damage,life:3,kind:'plasma'});continue;}
       const wall=ray(this.level,p.x,p.y,dx,dy,24);let hit=null,nearest=wall.depth;
-      for(const e of this.level.enemies){if(e.dead)continue;const ex=e.x-p.x,ey=e.y-p.y,along=ex*dx+ey*dy,cross=Math.abs(ex*dy-ey*dx);if(along>0&&along<nearest&&cross<(e.kind==='warden'?.48:.3)){hit=e;nearest=along;}}
+      for(const e of this.level.enemies){if(e.dead)continue;const ex=e.x-p.x,ey=e.y-p.y,along=ex*dx+ey*dy,cross=Math.abs(ex*dy-ey*dx),radius=e.kind==='boss'?.58:e.kind==='warden'?.48:.3;if(along>0&&along<nearest&&cross<radius){hit=e;nearest=along;}}
       if(hit)this.hurtEnemy(hit,w.damage);else this.sparks(p.x+dx*(wall.depth-.04),p.y+dy*(wall.depth-.04),w.color,2);
     }
   }
