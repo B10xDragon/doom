@@ -27,10 +27,10 @@ function menu(){playing=false;input.clear();document.exitPointerLock?.();$('debr
 function hud(){const p=world.player,w=WEAPONS[p.weapon];$('health').textContent=Math.ceil(p.health);$('shield').textContent=Math.ceil(p.shield);$('health-bar').style.width=p.health+'%';$('shield-bar').style.width=p.shield+'%';$('health-bar').style.background=p.health<30?'#ff9a7f':'#8df8ce';$('weapon-name').textContent='0'+(p.weapon+1)+' / '+w.name;$('ammo').textContent=w.ammo?p[w.ammo]:'∞';$('blue-key').classList.toggle('active',p.keys.blue);$('red-key').classList.toggle('active',p.keys.red);$('relays').textContent='RELAYS '+world.relayCount+'/2';$('level-number').textContent='0'+(world.level.index+1);$('level-name').textContent=world.level.config.name;$('sector').textContent='SECTOR 0'+(world.level.index+1)+' / '+world.level.config.name;$('objective').textContent=world.objective();$('notice').textContent=world.messageTime>0?world.message:'';$('prompt').textContent=playing?world.prompt():'';}
 function debrief(){
   playing=false;input.clear();document.exitPointerLock?.();$('debrief').hidden=false;$('menu').hidden=true;$('crosshair').hidden=true;$('touch-controls').style.visibility='hidden';
-  const dead=world.state==='dead',win=!dead&&world.level.index===2;
+  const dead=world.state==='dead',win=!dead&&world.level.index===9;
   $('result-kicker').textContent=dead?'SUIT OFFLINE':win?'TRANSMISSION RECEIVED':'SECTOR SECURED';
   $('result-title').textContent=dead?'Signal interrupted.':win?'You brought the station back.':'Airlock reached.';
-  $('result-body').textContent=dead?'Restart this sector with your entrance loadout.':win?'The evacuation shuttle is online. The relay carries your signal home.':'Supplies replenished. The next sector is waiting.';
+  $('result-body').textContent=dead?'Restart this sector with your entrance loadout.':win?'The command core is silent. The station is yours again.':'Supplies replenished. The next sector is waiting.';
   const mins=Math.floor(world.time/60),secs=Math.floor(world.time%60).toString().padStart(2,'0');
   $('stats').innerHTML='<div>ROBOTS DISABLED<br><strong>'+world.kills+' / '+world.level.enemies.length+'</strong></div><div>SECRETS<br><strong>'+world.secrets+' / 1</strong></div><div>TIME<br><strong>'+mins+':'+secs+'</strong></div>';
   $('next').textContent=dead?'RETRY SECTOR →':win?'PLAY AGAIN →':'NEXT SECTOR →';$('next').focus();
@@ -39,7 +39,7 @@ function debrief(){
 }
 $('start').onclick=()=>{audio.unlock();begin();};$('resume').onclick=resume;$('pause').onclick=()=>playing?pause():world.state==='playing'&&$('debrief').hidden?resume():menu();$('map').onclick=()=>{if(playing)world.mapOpen=!world.mapOpen;};
 $('continue').onclick=()=>{if(checkpoint)begin(checkpoint.index,checkpoint.carry,checkpoint.difficulty,checkpoint.entry);};
-$('next').onclick=()=>{if(world.state==='dead'){const r=runStart;begin(r.index,r.carry,r.difficulty,true);}else if(world.level.index<2)begin(world.level.index+1,loadout(world.player),world.difficulty);else begin();};
+$('next').onclick=()=>{if(world.state==='dead'){const r=runStart;begin(r.index,r.carry,r.difficulty,true);}else if(world.level.index<9)begin(world.level.index+1,loadout(world.player),world.difficulty);else begin();};
 $('result-menu').onclick=menu;
 $('fullscreen').onclick=async()=>{const shell=$('shell');if(document.fullscreenElement||document.body.classList.contains('pseudo-fullscreen')){try{if(document.fullscreenElement)await document.exitFullscreen();}catch{}document.body.classList.remove('pseudo-fullscreen');$('fullscreen').textContent='FULLSCREEN';return;}try{if(shell.requestFullscreen){await shell.requestFullscreen();$('fullscreen').textContent='EXIT FULLSCREEN';return;}if(shell.webkitRequestFullscreen){shell.webkitRequestFullscreen();$('fullscreen').textContent='EXIT FULLSCREEN';return;}}catch{}document.body.classList.add('pseudo-fullscreen');$('fullscreen').textContent='EXIT FULLSCREEN';$('menu-status').textContent='Expanded game mode enabled. Rotate to landscape for the widest view.';};
 function frame(now){
