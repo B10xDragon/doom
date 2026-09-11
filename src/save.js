@@ -1,0 +1,6 @@
+import {clamp} from './world.js';
+export const SAVE_KEY='void-station-save-v1';
+export function loadout(player){return {health:player.health,shield:player.shield,owned:player.owned.slice(),weapon:player.weapon,shells:player.shells,cells:player.cells};}
+export function validSave(s){return !!(s&&s.version===1&&Number.isInteger(s.index)&&s.index>=0&&s.index<3&&['relaxed','standard','intense'].includes(s.difficulty)&&typeof s.entry==='boolean'&&s.carry&&Array.isArray(s.carry.owned)&&s.carry.owned.length===3&&s.carry.owned.every(v=>typeof v==='boolean')&&s.carry.owned[0]&&['health','shield','shells','cells','weapon'].every(k=>Number.isFinite(s.carry[k]))&&Number.isInteger(s.carry.weapon)&&s.carry.weapon>=0&&s.carry.weapon<3&&s.carry.owned[s.carry.weapon]&&s.carry.health>0&&s.carry.health<=100&&s.carry.shield>=0&&s.carry.shield<=100&&s.carry.shells>=0&&s.carry.cells>=0);}
+export function restoreEntry(world,entry){const p=world.player;p.health=clamp(entry.health,1,100);p.shield=clamp(entry.shield,0,100);p.owned=entry.owned.slice();p.weapon=entry.weapon;p.shells=Math.floor(entry.shells);p.cells=Math.floor(entry.cells);}
+export function checkpoint(world){return {version:1,index:world.level.index,difficulty:world.difficulty,entry:true,carry:loadout(world.player)};}

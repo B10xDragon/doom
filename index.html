@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080d13">
+  <meta name="description" content="Void Station: an original retro space-station shooter for keyboard, mouse, and touch.">
+  <title>VOID STATION</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles/game.css">
+</head>
+<body>
+  <main id="shell">
+    <header class="topbar"><a class="wordmark" href="./">VOID<span>STATION</span></a><span id="sector">ORBITAL SALVAGE / SECTOR 01</span><div class="top-actions"><button id="map" aria-label="Toggle automap">MAP</button><button id="pause" aria-label="Pause game">PAUSE</button></div></header>
+    <section id="viewport" aria-label="Game view">
+      <canvas id="screen" width="640" height="360" tabindex="0" aria-label="First-person space station. WASD moves, mouse looks, click fires, E interacts."></canvas>
+      <div id="objective">RESTORE STATION POWER</div>
+      <div id="notice" role="status" aria-live="polite"></div>
+      <div id="prompt"></div>
+      <div id="crosshair" aria-hidden="true">+</div>
+      <div id="touch-controls" aria-label="Touch controls">
+        <div id="look-zone" aria-label="Drag to look"></div>
+        <div id="stick" aria-label="Movement thumbstick"><span id="stick-knob"></span><small>MOVE</small></div>
+        <button id="touch-fire" aria-label="Hold to fire">FIRE</button>
+        <button id="touch-use" aria-label="Use door or terminal">USE</button>
+        <button id="touch-weapon" aria-label="Next weapon">SWAP</button>
+        <span id="look-label">DRAG TO LOOK</span>
+      </div>
+      <section id="menu" class="overlay">
+        <div class="menu-card">
+          <p class="kicker">TRANSMISSION 001 / SIGNAL LOST</p>
+          <h1>VOID<br><span>STATION</span></h1>
+          <p class="intro">The crew is gone. The machines are still awake.<br>Restore the relays. Reach the evacuation bay.</p>
+          <div class="campaign">3 SECTORS <span>•</span> 3 WEAPONS <span>•</span> ONE WAY OUT</div>
+          <div class="settings">
+            <label>Difficulty<select id="difficulty"><option value="relaxed">Explorer</option><option value="standard" selected>Marine</option><option value="intense">Veteran</option></select></label>
+            <label>Resolution<select id="quality"><option value="480">Classic</option><option value="640" selected>Balanced</option><option value="800">Sharp</option></select></label>
+            <label>Aim sensitivity<input id="sensitivity" type="range" min="0.5" max="2" step="0.1" value="1" aria-label="Aim sensitivity"></label>
+            <label class="check"><input id="sound" type="checkbox" checked> Audio</label>
+            <label class="check"><input id="motion" type="checkbox"> Reduced motion</label>
+            <label class="check"><input id="touch-setting" type="checkbox"> Touch controls</label>
+          </div>
+          <div class="menu-actions"><button id="start" class="primary">ENTER STATION <span>→</span></button><button id="resume" hidden>RESUME</button><button id="continue" hidden>CONTINUE CAMPAIGN</button><button id="fullscreen">FULLSCREEN</button></div>
+          <p id="menu-help" class="help">WASD move · Mouse aim · Click / Space fire · E use · 1–3 weapons · Tab map · Esc pause<br>iPad: left stick moves · right side aims · hold FIRE · landscape recommended</p>
+          <p id="menu-status" class="help" role="status"></p>
+        </div>
+      </section>
+      <section id="debrief" class="overlay" hidden><div class="menu-card debrief-card"><p class="kicker" id="result-kicker">SECTOR SECURED</p><h2 id="result-title">Airlock reached.</h2><p id="result-body"></p><div id="stats"></div><button id="next" class="primary">NEXT SECTOR →</button><button id="result-menu">MAIN MENU</button></div></section>
+    </section>
+    <footer id="hud">
+      <div class="stat"><span>SUIT</span><strong id="health">100</strong><div class="meter"><i id="health-bar"></i></div></div>
+      <div class="stat"><span>SHIELD</span><strong id="shield">50</strong><div class="meter blue"><i id="shield-bar"></i></div></div>
+      <div class="weapon-stat"><span id="weapon-name">01 / PULSE DRIVER</span><strong id="ammo">∞</strong><small>ENERGY</small></div>
+      <div class="keys"><span>ACCESS</span><div><i id="blue-key">B</i><i id="red-key">R</i></div><small id="relays">RELAYS 0/2</small></div>
+      <div class="stat mission"><span>SECTOR</span><strong id="level-number">01</strong><small id="level-name">DOCKING ARRAY</small></div>
+    </footer>
+    <div class="bottomline"><span>RECOVER THE SIGNAL.</span><span>ORIGINAL RETRO FPS / V1.0</span></div>
+  </main>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
