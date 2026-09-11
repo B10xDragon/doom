@@ -1,5 +1,5 @@
-import {makeArt} from './art.js';
-import {ray,clamp,distance,WEAPONS} from './world.js';
+import {makeArt} from './art.js?v=2';
+import {ray,clamp,distance,WEAPONS} from './world.js?v=2';
 const pack=(r,g,b)=>((255<<24)|(b<<16)|(g<<8)|r)>>>0;
 export class Renderer{
   constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false});this.art=makeArt();this.raw={};for(const [key,c] of Object.entries({...this.art.textures,...this.art.sprites}))this.raw[key]={width:c.width,height:c.height,data:new Uint32Array(c.getContext('2d').getImageData(0,0,c.width,c.height).data.buffer)};this.reduced=false;this.resize(640,360);}
