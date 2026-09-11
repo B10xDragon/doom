@@ -31,10 +31,10 @@ export function makeArt(){
     if(type===5){rect(6,8,52,44,'#111f29');rect(9,11,46,34,'#24423f');for(let i=0;i<12;i++){const px=10+Math.floor(rnd()*42),py=12+Math.floor(rnd()*30);rect(px,py,2+Math.floor(rnd()*10),1,'#84bba5');}rect(8,54,8,3,'#d3994f');rect(19,54,8,3,'#529b81');}
     textures[type]=c;
   }
-  for(const kind of ['drone','sentinel','warden'])for(let frame=0;frame<2;frame++){
+  for(const kind of ['drone','sentinel','warden','boss'])for(let frame=0;frame<2;frame++){
     const c=surface(96,128),x=c.getContext('2d'),r=(a,b,w,h,col)=>{x.fillStyle=col;x.fillRect(a,b,w,h);};
-    const armor=kind==='drone'?'#849693':kind==='warden'?'#a78b6b':'#778696';
-    const dark='#23343d',light='#b7c7bd',eye=kind==='warden'?'#ffd389':'#ff8874';
+    const armor=kind==='drone'?'#849693':kind==='warden'?'#a78b6b':kind==='boss'?'#8f3f62':'#778696';
+    const dark=kind==='boss'?'#281c35':'#23343d',light=kind==='boss'?'#ffb1c0':'#b7c7bd',eye=kind==='warden'?'#ffd389':kind==='boss'?'#ff6d86':'#ff8874';
     x.fillStyle='#0005';x.beginPath();x.ellipse(48,119,30,7,0,0,7);x.fill();
     if(kind==='drone'){
       const yy=frame*3;r(15,46+yy,66,28,dark);r(21,37+yy,54,37,armor);r(25,34+yy,46,5,light);r(6,51+yy,15,14,armor);r(75,51+yy,15,14,armor);
@@ -47,6 +47,7 @@ export function makeArt(){
       r(10,38,16,33,armor);r(71,38,16,33,armor);r(8,67,18,23,dark);r(70,64,20,26,dark);r(72,60,16,8,'#bac0a4');r(74,78,12,8,'#d99158');
       r(31,14,34,24,dark);r(33,12,30,20,armor);r(35,11,26,4,light);r(35,23,26,7,'#182932');r(38,25,20,3,eye);
       if(kind==='warden'){r(4,30,25,13,'#b29a6d');r(67,30,25,13,'#b29a6d');r(3,26,23,5,'#d9c290');r(69,26,23,5,'#d9c290');r(39,39,18,6,'#edbb74');}
+      if(kind==='boss'){r(0,28,20,20,'#542b55');r(76,28,20,20,'#542b55');r(13,20,70,6,'#f06c87');r(24,4,48,10,'#3b2546');r(30,0,36,8,'#ff8ca1');r(19,73,58,8,'#fa6d82');r(28,83,40,12,'#432542');r(34,86,28,5,'#ffb1c0');}
     }
     sprites[kind+frame]=c;
   }
