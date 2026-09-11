@@ -37,7 +37,7 @@ export class Renderer{
       if(hit.mx>=0&&hit.my>=0&&hit.mx<l.size&&hit.my<l.size&&depth<12)l.seen[hit.my*l.size+hit.mx]=1;
     }
     const objects=[];
-    for(const e of l.enemies)objects.push({...e,key:e.kind+Math.floor(world.time*4)%2,height:e.kind==='warden'?1.2:e.kind==='drone'?.85:.97,dead:e.dead});
+    for(const e of l.enemies)objects.push({...e,key:e.kind+Math.floor(world.time*4)%2,height:e.kind==='boss'?1.8:e.kind==='warden'?1.2:e.kind==='drone'?.85:.97,dead:e.dead});
     for(const i of l.items)if(!i.taken)objects.push({...i,key:i.kind,height:.55,item:true});
     for(const q of l.props)objects.push({...q,key:q.kind,height:1});
     for(const q of l.relays)objects.push({...q,key:q.on?'relay-on':'relay',height:.9});
