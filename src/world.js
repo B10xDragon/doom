@@ -1,4 +1,4 @@
-import {buildLevel} from './levels.js';
+import {buildLevel} from './levels.js?v=2';
 export const WEAPONS=[
   {name:'PULSE DRIVER',cooldown:.27,damage:22,pellets:1,spread:.018,ammo:null,color:'#8dffcf'},
   {name:'ARC SCATTER',cooldown:.72,damage:15,pellets:7,spread:.19,ammo:'shells',color:'#ffd387'},
