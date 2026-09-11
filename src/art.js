@@ -60,7 +60,7 @@ export function makeArt(){
       const color=kind==='bolt'?'#ffb568':'#7ac7ff';x.fillStyle=color+'30';x.beginPath();x.arc(32,48,16,0,7);x.fill();x.fillStyle=color;x.beginPath();x.arc(32,48,9,0,7);x.fill();r(28,44,8,8,'#f3fff0');
     }else{
       const col={health:'#91ffbb',shield:'#84bfff',ammo:'#ffd58f',blue:'#77bfff',red:'#ff8d84',scatter:'#debd88',plasma:'#8ae9ff'}[kind];
-      x.fillStyle='#0006';x.beginPath();x.ellipse(32,88,22,5,0,7);x.fill();
+      x.fillStyle='#0006';x.beginPath();x.ellipse(32,88,22,5,0,0,Math.PI*2);x.fill();
       if(kind==='blue'||kind==='red'){r(17,52,30,20,'#1b2d3c');r(19,54,26,16,col);r(22,57,7,8,'#e4edc9');r(33,59,11,2,'#344f59');}
       else{r(12,57,40,25,'#203542');r(15,53,34,24,'#7d9694');r(17,57,30,17,'#2b4350');r(20,63,24,3,col);r(29,58,6,14,col);r(16,52,32,3,col);}
     }
