@@ -9,3 +9,6 @@ test('entrance checkpoint survives JSON roundtrip without gaining supplies',()=>
 test('malformed checkpoint input is rejected',()=>{
   for(const data of [null,{},[],{index:4},{...checkpoint(new World()),carry:{health:10}}, {...checkpoint(new World()),carry:{...loadout(new World().player),owned:['yes',false,false]}}])assert.equal(validSave(data),false);
 });
+test('late-campaign checkpoints support sector 10',()=>{
+  const w=new World(9,'intense');const save=checkpoint(w);assert.equal(save.index,9);assert.equal(validSave(save),true);
+});
