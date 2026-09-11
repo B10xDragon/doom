@@ -1,8 +1,8 @@
-import {World,WEAPONS,clamp} from './world.js';
-import {Renderer} from './renderer.js';
-import {Input} from './input.js';
-import {Audio} from './audio.js';
-import {SAVE_KEY,validSave,restoreEntry,checkpoint as makeCheckpoint,loadout} from './save.js';
+import {World,WEAPONS,clamp} from './world.js?v=2';
+import {Renderer} from './renderer.js?v=2';
+import {Input} from './input.js?v=2';
+import {Audio} from './audio.js?v=2';
+import {SAVE_KEY,validSave,restoreEntry,checkpoint as makeCheckpoint,loadout} from './save.js?v=2';
 const $=id=>document.getElementById(id),canvas=$('screen'),renderer=new Renderer(canvas),audio=new Audio();
 const storage={get(key){try{return JSON.parse(localStorage.getItem(key));}catch{return null;}},set(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}};
 let world=new World(),playing=false,last=0,hudTimer=0,previewTimer=0,runStart=null,checkpoint=storage.get(SAVE_KEY);
@@ -41,7 +41,7 @@ $('start').onclick=()=>{audio.unlock();begin();};$('resume').onclick=resume;$('p
 $('continue').onclick=()=>{if(checkpoint)begin(checkpoint.index,checkpoint.carry,checkpoint.difficulty,checkpoint.entry);};
 $('next').onclick=()=>{if(world.state==='dead'){const r=runStart;begin(r.index,r.carry,r.difficulty,true);}else if(world.level.index<2)begin(world.level.index+1,loadout(world.player),world.difficulty);else begin();};
 $('result-menu').onclick=menu;
-$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement){await document.exitFullscreen();return;}if(!$('shell').requestFullscreen){$('menu-status').textContent='Fullscreen is not available here. Rotate to landscape for a larger view.';return;}await $('shell').requestFullscreen();}catch{$('menu-status').textContent='Fullscreen is unavailable in this browser. Landscape mode still works.';}};
+$('fullscreen').onclick=async()=>{const shell=$('shell');if(document.fullscreenElement||document.body.classList.contains('pseudo-fullscreen')){try{if(document.fullscreenElement)await document.exitFullscreen();}catch{}document.body.classList.remove('pseudo-fullscreen');$('fullscreen').textContent='FULLSCREEN';return;}try{if(shell.requestFullscreen){await shell.requestFullscreen();$('fullscreen').textContent='EXIT FULLSCREEN';return;}if(shell.webkitRequestFullscreen){shell.webkitRequestFullscreen();$('fullscreen').textContent='EXIT FULLSCREEN';return;}}catch{}document.body.classList.add('pseudo-fullscreen');$('fullscreen').textContent='EXIT FULLSCREEN';$('menu-status').textContent='Expanded game mode enabled. Rotate to landscape for the widest view.';};
 function frame(now){
   const dt=Math.min((now-last)/1000||0,.04);last=now;
   if(playing){world.update(dt,input.poll());audio.tick(dt,true);for(const e of world.events.splice(0))audio.effect(e);if(world.state!=='playing')debrief();renderer.render(world);}
