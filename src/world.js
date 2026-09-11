@@ -41,12 +41,12 @@ export class World {
     this.level=buildLevel(index);this.difficulty=difficulty;
     this.player={...this.level.spawn,health:100,shield:50,weapon:0,shells:14,cells:45,owned:[true,false,false],keys:{blue:false,red:false}};
     if(carry){this.player.health=clamp(carry.health+25,65,100);this.player.shield=clamp(carry.shield+20,35,100);this.player.owned=carry.owned.slice();this.player.weapon=carry.weapon;this.player.shells=carry.shells+12;this.player.cells=carry.cells+35;}
-    this.time=0;this.cooldown=0;this.flash=0;this.damageFlash=0;this.shot=0;this.kills=0;this.secrets=0;this.projectiles=[];this.particles=[];this.events=[];this.state='playing';this.flow=null;this.flowTimer=0;this.bob=0;this.hitMarker=0;this.useHeld=false;this.message='Find the blue access card. Explore the docking array.';this.messageTime=5;this.mapOpen=false;
+    this.time=0;this.cooldown=0;this.flash=0;this.damageFlash=0;this.shot=0;this.kills=0;this.secrets=0;this.projectiles=[];this.particles=[];this.events=[];this.state='playing';this.flow=null;this.flowTimer=0;this.bob=0;this.hitMarker=0;this.useHeld=false;this.message=this.level.config.final?'Reach the command core. Something enormous is waiting.':this.level.config.subtitle;this.messageTime=5;this.mapOpen=false;
   }
   say(text){this.message=text;this.messageTime=3.2;}
   emit(type){this.events.push(type);}
   get relayCount(){return this.level.relays.filter(r=>r.on).length;}
-  objective(){if(!this.player.keys.blue)return 'FIND BLUE ACCESS / EXPLORE';if(!this.player.keys.red)return 'FIND RED ACCESS / SECURITY';if(this.relayCount<2)return 'RESTORE RELAYS / '+this.relayCount+' OF 2';if(this.level.enemies.some(e=>e.kind==='warden'&&!e.dead))return 'DISABLE THE REACTOR WARDEN';return 'REACH EVACUATION / USE AIRLOCK';}
+  objective(){if(!this.player.keys.blue)return 'FIND BLUE ACCESS / EXPLORE';if(!this.player.keys.red)return 'FIND RED ACCESS / SECURITY';if(this.relayCount<2)return 'RESTORE RELAYS / '+this.relayCount+' OF 2';if(this.level.enemies.some(e=>(e.kind==='warden'||e.kind==='boss')&&!e.dead))return this.level.config.final?'DEFEAT THE CORE TITAN':'DISABLE THE REACTOR WARDEN';return 'REACH EVACUATION / USE AIRLOCK';}
   interactTarget(){
     const p=this.player,candidates=[];
     for(const d of this.level.doors){const at={x:d.x+.5,y:d.y+.5};const a=Math.atan2(at.y-p.y,at.x-p.x)-p.angle;const dist=distance(p,at);if(dist<1.9&&Math.cos(a)>.3&&visible(this.level,p,{x:p.x+(at.x-p.x)*.55,y:p.y+(at.y-p.y)*.55}))candidates.push({type:'door',object:d,dist});}
@@ -64,7 +64,7 @@ export class World {
       if(d.target===0){d.target=1;this.emit('door');}
     }else if(t.type==='relay'){t.object.on=true;this.say('RELAY ONLINE / '+this.relayCount+' of 2 restored.');this.emit('relay');}
     else if(this.relayCount<2){this.say('Restore both power relays before evacuation.');this.emit('locked');}
-    else if(this.level.enemies.some(e=>e.kind==='warden'&&!e.dead)){this.say('Reactor locked down. Disable the Warden.');this.emit('locked');}
+    else if(this.level.enemies.some(e=>(e.kind==='warden'||e.kind==='boss')&&!e.dead)){this.say(this.level.config.final?'Command core sealed. Bring down the Core Titan.':'Reactor locked down. Disable the Warden.');this.emit('locked');}
     else{this.state='complete';this.emit('complete');}
   }
   selectWeapon(n){if(!this.player.owned[n]){this.say('Weapon not recovered yet.');return;}this.player.weapon=n;this.emit('switch');}
@@ -75,7 +75,7 @@ export class World {
     if(this.player.health<=0){this.state='dead';this.emit('dead');}
   }
   sparks(x,y,color,count=10){for(let i=0;i<count;i++)this.particles.push({x,y,z:.45,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,vz:Math.random()*2,life:.3+Math.random()*.3,color});}
-  hurtEnemy(e,amount){if(e.dead)return;e.health-=amount;e.hurt=.17;e.alert=true;this.hitMarker=.1;this.sparks(e.x,e.y,'#aefbff',4);if(e.health<=0){e.dead=true;this.kills++;this.sparks(e.x,e.y,'#ffc575',20);this.emit('destroy');}else this.emit('hit');}
+  hurtEnemy(e,amount){if(e.dead)return;e.health-=amount;e.hurt=.17;e.alert=true;this.hitMarker=.1;this.sparks(e.x,e.y,e.kind==='boss'?'#ff7d96':'#aefbff',e.kind==='boss'?8:4);if(e.kind==='boss'&&e.health<=e.maxHealth*.66&&e.phase===0){e.phase=1;e.cooldown=.2;this.say('CORE TITAN / PHASE TWO: OVERDRIVE');this.emit('bossphase');}if(e.kind==='boss'&&e.health<=e.maxHealth*.33&&e.phase===1){e.phase=2;e.cooldown=.2;this.say('CORE TITAN / PHASE THREE: MELTDOWN');this.emit('bossphase');}if(e.health<=0){e.dead=true;this.kills++;this.sparks(e.x,e.y,e.kind==='boss'?'#ff6d86':'#ffc575',e.kind==='boss'?55:20);this.say(e.kind==='boss'?'CORE TITAN DISABLED / EVACUATION UNLOCKED':'TARGET DISABLED');this.emit('destroy');}else this.emit('hit');}
   fire(){
     if(this.state!=='playing'||this.cooldown>0)return;
     const p=this.player,w=WEAPONS[p.weapon];
@@ -128,13 +128,16 @@ export class World {
       e.cooldown-=dt;
       if(sight&&d<10&&e.cooldown<=0){
         const angle=Math.atan2(p.y-e.y,p.x-e.x);const count=e.kind==='warden'?3:1;
-        for(let i=0;i<count;i++){const a=angle+(i-(count-1)/2)*.16;const v=e.kind==='drone'?3.1:3.8;this.projectiles.push({x:e.x+Math.cos(a)*.3,y:e.y+Math.sin(a)*.3,dx:Math.cos(a)*v,dy:Math.sin(a)*v,friendly:false,damage:e.kind==='warden'?22:e.kind==='sentinel'?16:10,life:5,kind:'bolt'});}
-        e.cooldown=(e.kind==='warden'?1.3:2.2)+Math.random()*.45;this.emit('enemy');
+        const boss=e.kind==='boss',phase=e.phase||0,burst=boss?5+phase*2:e.kind==='warden'?3:1;
+        for(let i=0;i<burst;i++){const a=angle+(i-(burst-1)/2)*(boss?.13:.16);const v=boss?3.5+phase*.45:e.kind==='drone'?3.1:3.8;this.projectiles.push({x:e.x+Math.cos(a)*.3,y:e.y+Math.sin(a)*.3,dx:Math.cos(a)*v,dy:Math.sin(a)*v,friendly:false,damage:boss?12+phase*4:e.kind==='warden'?22:e.kind==='sentinel'?16:10,life:5,kind:'bolt'});}
+        if(boss&&phase>0){for(let i=0;i<phase*4;i++){const a=i/(phase*4)*Math.PI*2;this.projectiles.push({x:e.x,y:e.y,dx:Math.cos(a)*2.4,dy:Math.sin(a)*2.4,friendly:false,damage:8+phase*3,life:3,kind:'bolt'});}}
+        if(boss&&phase>0&&this.level.enemies.filter(v=>!v.dead&&v.kind!=='boss').length<5){const kind=phase===2?'sentinel':'drone';this.level.enemies.push({kind,x:e.x+(phase===2?2:-2),y:e.y+(phase===2?-2:2),health:kind==='sentinel'?78:42,maxHealth:kind==='sentinel'?78:42,cooldown:1.5,alert:true,hurt:0,dead:false,phase:0});this.say('CORE TITAN DEPLOYING REINFORCEMENTS');}
+        e.cooldown=(boss?Math.max(.55,1.25-phase*.2):e.kind==='warden'?1.3:2.2)+Math.random()*.45;this.emit(boss?'bossfire':'enemy');
       }
       if(d>.9&&(!sight||d>3.5)){
         let tx=p.x,ty=p.y;
         if(!sight){const gx=Math.floor(e.x),gy=Math.floor(e.y),n=this.level.size;let best=this.flow[gy*n+gx];if(best<0)continue;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const v=this.flow[(gy+dy)*n+gx+dx];if(v>=0&&v<best){best=v;tx=gx+dx+.5;ty=gy+dy+.5;}}}
-        const a=Math.atan2(ty-e.y,tx-e.x),v=e.kind==='warden'?.65:e.kind==='sentinel'?.75:1.1;
+        const a=Math.atan2(ty-e.y,tx-e.x),v=e.kind==='boss'?.48:e.kind==='warden'?.65:e.kind==='sentinel'?.75:1.1;
         moveActor(this.level,e,Math.cos(a)*v*dt,Math.sin(a)*v*dt,.22);
       }
     }
