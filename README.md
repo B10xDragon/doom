@@ -36,11 +36,18 @@ Click **ENTER STATION** to start and enable sound. On PC the game requests mouse
 
 ## Campaign
 
-Three authored sector layouts share a consistent station access scheme, with different orientations, interior cover, enemy populations, and a final Warden encounter:
+Ten authored sectors share a consistent station access scheme, with different orientations, interior cover, enemy populations, and a final Core Titan encounter:
 
 1. **Docking Array:** acquire the blue access card in storage, enter security, recover red access, restore both relays, and reach the airlock.
 2. **Research Deck:** navigate altered corridors and additional security units with your recovered equipment.
 3. **Reactor Heart:** restore power and disable the Warden before evacuation.
+4. **Cryo Vaults:** navigate frozen storage and restart navigation.
+5. **Orbital Forge:** cross the manufacturing ring under heavier pressure.
+6. **Signal Cathedral:** follow the strange transmission through the antenna maze.
+7. **Helios Array:** reroute power across the defense lattice.
+8. **Null Archive:** recover the station memory.
+9. **Ascension Ring:** cross the final security perimeter.
+10. **Command Core:** survive the Core Titan's three phases, burst attacks, and reinforcements, then evacuate.
 
 There is a secret supply room in each sector. Investigate loose wall panels with USE. The automap only reveals explored areas and marks discovered keys, relays, and the exit.
 
