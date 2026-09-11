@@ -6,9 +6,9 @@ import {fileURLToPath} from 'node:url';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 test('all HTML assets and module imports resolve under a GitHub Pages subpath',()=>{
   const html=readFileSync(resolve(root,'index.html'),'utf8');
-  for(const [,url]of html.matchAll(/(?:src|href)="([^"]+)"/g)){if(url==='./')continue;assert.ok(!url.startsWith('/'));assert.ok(existsSync(resolve(root,url)),url);}
+  for(const [,raw]of html.matchAll(/(?:src|href)="([^"]+)"/g)){const url=raw.split('?')[0];if(url==='./')continue;assert.ok(!url.startsWith('/'));assert.ok(existsSync(resolve(root,url)),url);}
   for(const name of ['main','renderer','world','art','levels','input','audio','save']){
-    const source=readFileSync(resolve(root,'src',name+'.js'),'utf8');for(const [,path]of source.matchAll(/from ['"]([^'"]+)['"]/g))assert.ok(existsSync(resolve(root,'src',path)),path);
+    const source=readFileSync(resolve(root,'src',name+'.js'),'utf8');for(const [,raw]of source.matchAll(/from ['"]([^'"]+)['"]/g)){const path=raw.split('?')[0];assert.ok(existsSync(resolve(root,'src',path)),path);}
   }
 });
 
